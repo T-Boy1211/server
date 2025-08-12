@@ -1,7 +1,8 @@
 const validateSignup = (req, res, next) => {
   const { email, password } = req.body;
+
   const emailRegex = /^\S+@\S+\.\S+$/;
-  const passRegex = /^(?=.*[a-z])(?=.*\d)(?=.*[@$!%*?&])[a-z\d@$!%*?&]{8,}$/;
+  const passRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
 
   if (!emailRegex.test(email)) {
     return res.status(400).json({ message: "Invalid email format" });
@@ -10,7 +11,7 @@ const validateSignup = (req, res, next) => {
   if (!passRegex.test(password)) {
     return res.status(400).json({
       message:
-        "Password must be at least 8 characters long and contain a number and special character",
+        "Password must be at least 8 characters long and contain an uppercase letter, a number, and a special character",
     });
   }
 
@@ -18,3 +19,4 @@ const validateSignup = (req, res, next) => {
 };
 
 module.exports = validateSignup;
+// 54

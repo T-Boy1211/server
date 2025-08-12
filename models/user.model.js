@@ -8,6 +8,7 @@ const userSchema = new mongoose.Schema({
   role: {type: String, enum: ['admin', 'user'], default: 'user'},
   createdAt: { type: Date, default: Date.now },
   updatedAt: { type: Date, default: Date.now }
-});
+}, { timestamps: true }
+);
 
 module.exports = mongoose.model('User', userSchema);
