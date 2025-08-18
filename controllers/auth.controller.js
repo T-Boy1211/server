@@ -32,7 +32,6 @@ exports.signup = async (req, res) => {
     await sendMail(user.email, templateName, {
       name: user.firstName,
       email: user.email,
-      token,
     });
 
     res.status(201).json({ user, token });
@@ -46,7 +45,7 @@ exports.login = async (req, res) => {
 
   try {
     const user = await User.findOne({ email });
-    if (!user) {
+    if (user) {
       return res.status(401).json({ message: "Incorrect email or password" });
     }
 
