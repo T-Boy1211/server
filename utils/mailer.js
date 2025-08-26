@@ -11,7 +11,7 @@ const transporter = nodemailer.createTransport({
   },
 });
 
-const sendEmail = async (template, to, userData) => {
+const sendEmail = async (to, template, userData) => {
   const templatePath = path.join(__dirname, `../views/emails/${template}.ejs`);
   const html = await ejs.renderFile(templatePath, userData);
 

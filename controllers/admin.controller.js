@@ -25,50 +25,50 @@ exports.createUser = async (req, res) => {
     });
 
     const token = jwt.sign(
-      { userId: user._id, email: user.email, role: user.role },
+      { userId: admin._id, email: admin.email, role: admin.role },
       process.env.JWT_SECRET,
       {
-        expiresIn: JWT_EXPIRY
+        expiresIn: process.env.JWT_EXPIRY
       }
     );
 
     const templateName = role === "admin" ? "adminSignup" : "userSignup";
-    await sendMail(admin.email, templateName, {
+    await sendMail(email, templateName, {
       name: admin.firstName,
-      email: admin.email,
+      email,
     });
 
-    res.status(201).json({ message: "User created", user, token });
+    res.status(201).json({ message: "Admin created", admin, token });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 };
 
 exports.adminLogin = async (req, res) => {
-  const { email, password } = req.body;
+  const { email, password, role } = req.body;
 
   try {
     const admin = await User.findOne({ email });
-    if (admin) return res.status(400).json({ message: "Email already exists" });
+    if (!admin) return res.status(400).json({ message: "Unregistered email exists" });
 
-    const isMatch = await bcrypt.compare(password);
-    if (!isMatch) return res.status(400).json({ message: "" });
+    const isMatch = bcrypt.compare(password, admin.password);
+    if (!isMatch) return res.status(400).json({ message: "Password not match" });
 
     const token = jwt.sign(
-      { userId: user._id, email: user.email, role: user.role },
+      { adminId: admin._id, email: admin.email, role: admin.role },
       process.env.JWT_SECRET,
       {
-        expiresIn: JWT_EXPIRY
+        expiresIn: process.env.JWT_EXPIRY,
       }
     );
 
     const templateName = role === "admin" ? "adminLogin" : "userLogin";
-    await sendMail(admin.email, templateName, {
+    await sendMail(email, templateName, {
       name: admin.firstName,
-      email: admin.email,
+      email,
     });
 
-    res.status(201).json({ message: "Loged in successful", user, token });
+    res.status(201).json({ message: "Loged in successful", admin, token });
   } catch (error) {
     console.log(`An error occure ${error.message}`);
   }

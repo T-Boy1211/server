@@ -34,7 +34,7 @@ exports.signup = async (req, res) => {
       email: user.email,
     });
 
-    res.status(201).json({ user, token });
+    res.status(201).json({ message: 'User created successfully', user, token });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -45,13 +45,13 @@ exports.login = async (req, res) => {
 
   try {
     const user = await User.findOne({ email });
-    if (user) {
+    if (!user) {
       return res.status(401).json({ message: "Incorrect email or password" });
     }
 
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
-      return res.status(401).json({ message: 'Incorrect email or password' });
+      return res.status(401).json({ message: "Incorrect password or email" });
     }
 
     const token = jwt.sign(
@@ -73,12 +73,12 @@ exports.login = async (req, res) => {
 };
 
 exports.profile = async (req, res) => {
-  const userExists = User.findById;
-  const user = User(
-    firstName,
-    lastName,
-    email,
-    password,
-  )
-  if (userExists) return res.status(200).json({ user })
-}
+  const { username } = req.params;
+
+  const [firstName, lastName] = username.split('-');
+  const user = await User.findOne({ firstName, lastName });
+
+  if (!user) return res.status(404).json({ message: "User not found" });
+
+  res.status(200).json({ user });
+};
